@@ -14,4 +14,13 @@ const createGame = (id, player1, player2) => {
   return game;
 };
 
-module.exports = { createGame };
+const updateGame = (game) => {
+  const index = games.findIndex((g) => g.id === game.id);
+  if (index !== -1) {
+    games[index] = game;
+  }
+};
+
+const getGame = (id) => games.find((game) => game.id === id);
+
+module.exports = { createGame, updateGame, getGame };
