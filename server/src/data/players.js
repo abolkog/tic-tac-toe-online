@@ -12,14 +12,12 @@ const createPlayer = (id, name, gameId, symbol) => {
   return player;
 };
 
-const getPlayer = (id) => players.find((player) => player.id === id);
+const getPlayer = id => players.find(player => player.id === id);
 
-const removePlayer = (id) => {
-  const index = players.findIndex((player) => player.id === id);
+const removePlayer = id => {
+  const index = players.findIndex(player => player.id === id);
   if (index !== -1) {
-    console.log(players);
     players.splice(index, 1);
-    console.log(players);
   }
 };
 

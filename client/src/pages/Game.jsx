@@ -8,6 +8,7 @@ const Game = ({ name, gameId }) => {
   const SERVER_ENDPOINT = 'http://localhost:5001';
   const [player, setPlayer] = useState({});
   const [game, setGame] = useState({});
+  const [notification, setNotification] = useState([]);
 
   useEffect(() => {
     const event = gameId ? 'joinGame' : 'createGame';
@@ -21,20 +22,35 @@ const Game = ({ name, gameId }) => {
   }, [SERVER_ENDPOINT, gameId, name]);
 
   useEffect(() => {
-    socket.on('playerCreated', (data) => {
+    socket.on('notification', data => {
+      const { message = '' } = data;
+      notification.push(message);
+      setNotification([...notification]);
+    });
+  }, [notification]);
+
+  useEffect(() => {
+    socket.on('playerCreated', data => {
       const { player } = data;
       setPlayer(player);
     });
 
-    socket.on('gameUpdated', (data) => {
+    socket.on('gameUpdated', data => {
       const { game } = data;
       setGame(game);
     });
   });
 
-  const onSquareClick = (value) => {
-    console.log(`Player ${player.name} clicked ${value}`);
+  const onSquareClick = value => {
+    socket.emit('moveMade', {
+      square: value,
+      player,
+      gameId: game.id,
+    });
   };
+
+  const turnMessage =
+    game.playerTurn === player.id ? 'Your Move' : 'Opponunt Turn';
 
   return (
     <div>
@@ -44,9 +60,13 @@ const Game = ({ name, gameId }) => {
           <strong>You are playing {player.symbol}</strong>
         </h5>
       )}
+      {game.status === 'playing' && <h5>{turnMessage}</h5>}
       {game && <h5>Game ID: {game.id}</h5>}
       <hr />
       <Board player={player} game={game} onSquareClick={onSquareClick} />
+      {notification.map((msg, index) => (
+        <p key={index}>{msg}</p>
+      ))}
     </div>
   );
 };
