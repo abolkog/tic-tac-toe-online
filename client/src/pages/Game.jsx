@@ -13,7 +13,7 @@ const Game = ({ name, gameId }) => {
   useEffect(() => {
     const event = gameId ? 'joinGame' : 'createGame';
     socket = new io(SERVER_ENDPOINT);
-    socket.emit(event, { name });
+    socket.emit(event, { name, gameId });
 
     return () => {
       socket.emit('disconnect');

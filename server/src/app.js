@@ -38,6 +38,40 @@ io.on('connection', socket => {
     });
   });
 
+  socket.on('joinGame', ({ name, gameId }) => {
+    // Check game id
+    const game = getGame(gameId);
+    if (!game) {
+      socket.emit('notification', {
+        message: 'Invalid game id',
+      });
+      return;
+    }
+    // Check Max player
+    if (game.player2) {
+      socket.emit('notification', {
+        message: 'Game is full',
+      });
+      return;
+    }
+    // Create player
+    const player = createPlayer(socket.id, name, game.id, 'O');
+    // Update  the game
+    game.player2 = player.id;
+    game.status = 'playing';
+    updateGame(game);
+
+    // notify other player
+    socket.join(gameId);
+    socket.emit('playerCreated', { player });
+    socket.emit('gameUpdated', { game });
+
+    socket.broadcast.emit('gameUpdated', { game });
+    socket.broadcast.emit('notification', {
+      message: `${name} has joined the game.`,
+    });
+  });
+
   socket.on('moveMade', data => {
     const { player, square, gameId } = data;
     // Get the game

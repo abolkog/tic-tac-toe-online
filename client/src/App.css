@@ -25,3 +25,7 @@
 .square-win {
   border: 2px solid green;
 }
+
+.disabled {
+  cursor: not-allowed;
+}

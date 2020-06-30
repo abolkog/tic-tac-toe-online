@@ -2,8 +2,9 @@ import React from 'react';
 import Square from './Square';
 
 const Board = ({ game, player, onSquareClick }) => {
-  const { playBoard = [] } = game;
-
+  const { playBoard = [], status = 'waiting' } = game;
+  const enabled = status === 'playing';
+  const canPlay = player.id === game.playerTurn;
   return (
     <div className="board">
       {playBoard.map((item, index) => {
@@ -13,6 +14,8 @@ const Board = ({ game, player, onSquareClick }) => {
             value={item}
             index={index}
             onClick={() => onSquareClick(index)}
+            enabled={enabled}
+            canPlay={canPlay}
           />
         );
       })}
