@@ -6,6 +6,7 @@ let socket;
 
 const Game = ({ name, gameId }) => {
   const SERVER_ENDPOINT = 'http://localhost:5001';
+  const [winner, setWinner] = useState(null);
   const [player, setPlayer] = useState({});
   const [game, setGame] = useState({});
   const [notification, setNotification] = useState([]);
@@ -39,6 +40,11 @@ const Game = ({ name, gameId }) => {
       const { game } = data;
       setGame(game);
     });
+
+    socket.on('gameEnd', data => {
+      const { winner } = data;
+      setWinner(winner);
+    });
   });
 
   const onSquareClick = value => {
@@ -49,8 +55,14 @@ const Game = ({ name, gameId }) => {
     });
   };
 
+  const getWinnerMessage = () => {
+    return winner.player.id === player.id ? 'You Win' : 'You Loose';
+  };
+
   const turnMessage =
     game.playerTurn === player.id ? 'Your Move' : 'Opponunt Turn';
+
+  const winnerMessage = winner ? getWinnerMessage() : 'Draw game';
 
   return (
     <div>
@@ -62,8 +74,17 @@ const Game = ({ name, gameId }) => {
       )}
       {game.status === 'playing' && <h5>{turnMessage}</h5>}
       {game && <h5>Game ID: {game.id}</h5>}
+
+      {game.status === 'gameOver' && (
+        <div className="alert alert-info">{winnerMessage}</div>
+      )}
       <hr />
-      <Board player={player} game={game} onSquareClick={onSquareClick} />
+      <Board
+        player={player}
+        game={game}
+        onSquareClick={onSquareClick}
+        winner={winner}
+      />
       {notification.map((msg, index) => (
         <p key={index}>{msg}</p>
       ))}

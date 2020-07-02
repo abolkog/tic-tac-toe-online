@@ -4,7 +4,7 @@ const socketIO = require('socket.io');
 const server = http.createServer();
 const io = socketIO(server);
 
-const { makeKey } = require('./util');
+const { makeKey, checkWinner } = require('./util');
 const { createGame, getGame, updateGame } = require('./data/games');
 const { createPlayer, getPlayer, removePlayer } = require('./data/players');
 
@@ -90,7 +90,29 @@ io.on('connection', socket => {
     game.playBoard = playBoard;
     updateGame(game);
 
+    // Brodcast game update to everyone
+    io.in(gameId).emit('gameUpdated', { game });
+
     // Check winning status or Draw
+    const hasWon = checkWinner(playBoard);
+    if (hasWon) {
+      const winner = { ...hasWon, player };
+      game.status = 'gameOver';
+      updateGame(game);
+      io.in(gameId).emit('gameUpdated', { game });
+      io.in(gameId).emit('gameEnd', { winner });
+      return;
+    }
+
+    // Checking Draw
+    const emptySquareIndex = playBoard.findIndex(item => item === null);
+    if (emptySquareIndex === -1) {
+      game.status = 'gameOver';
+      updateGame(game);
+      io.in(gameId).emit('gameUpdated', { game });
+      io.in(gameId).emit('gameEnd', { winner: null });
+      return;
+    }
   });
 });
 
