@@ -1,6 +1,6 @@
 # Tick Tac Toe
 
-Repo for the tutorial [Multiplayer Tic Tac Toe App - Arabic](https://abolkog.com/courses/multiplayer-tic-tac-toe)
+Repo for the tutorial [Multiplayer Tic Tac Toe App - Arabic](https://barmaga.io/en/courses/build-multiplayer-tic-tac-toe/lectures/part-1)
 Built with React and Socket.io
 
 ![image](https://user-images.githubusercontent.com/3861725/86353948-7c5b2900-bcab-11ea-9182-4a9afa2e406c.png)
